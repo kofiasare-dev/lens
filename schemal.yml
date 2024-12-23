@@ -1,0 +1,49 @@
+---
+facial_recognition_verification:
+  description: >
+    Compares a user's selfie with the photo on their ID to confirm identity.
+    Uses AI models for matching and liveness detection to prevent spoofing.
+  request_structure:
+    type: "facial_recognition"
+    required_fields:
+      - selfie_url: "URL of the user's selfie."
+      - document_photo_url: "URL of the photo extracted from the user's ID."
+      - user_id: "Unique identifier for the user."
+    optional_fields:
+      - confidence_threshold: "Optional minimum confidence score for matching, default is 0.85."
+  api_endpoint:
+    path: "/api/v1/verify/face"
+    method: POST
+    body_example:
+      type: "facial_recognition"
+      payload:
+        selfie_url: "https://example.com/uploads/selfie.jpg"
+        document_photo_url: "https://example.com/uploads/document_photo.jpg"
+        user_id: "12345"
+        confidence_threshold: 0.90
+  processing_pipeline:
+    - Step 1: "Validate input fields to ensure all required URLs are accessible."
+    - Step 2: "Send selfie and document photo to AI model for face matching."
+    - Step 3: "Calculate confidence score of the match."
+    - Step 4: "Return result indicating whether the match was successful."
+  response_structure:
+    success:
+      status: "verified"
+      confidence_score: "0.93"
+      message: "Facial recognition successful."
+    failure:
+      status: "unverified"
+      confidence_score: "0.55"
+      message: "Facial recognition failed. Confidence below threshold."
+  database_schema:
+    table: "verifications"
+    columns:
+      - id: SERIAL PRIMARY KEY
+      - user_id: INT NOT NULL
+      - type: "facial_recognition"
+      - selfie_url: "URL of the user's selfie."
+      - document_photo_url: "URL of the ID's photo."
+      - confidence_score: FLOAT
+      - status: VARCHAR(20) DEFAULT 'pending'
+      - created_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      - updated_at: TIMESTAMP DEFAULT CURRENT_TIMESTAMP
