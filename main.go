@@ -16,21 +16,17 @@ func main() {
 	api := fiber.New()
 
 	pg := db.GetPgClient()
+	defer pg.Close()
 
+	// models
 	models := []interface{}{&models.VerificationRequest{}}
-
-	// migrate models
-	// pg.Migrator().DropTable(models...)
+	pg.Migrator().DropTable(models...)
 	pg.AutoMigrate(models...)
 
 	api.Get("/", contollers.Root)
-
-	v1 := api.Group("/api/v1")
-	v1.Post("/verify/face", contollers.VerifyFace)
+	api.Post("/api/v1/verifications", contollers.VerificationsCreate)
+	api.Get("/api/v1/verifications/:reference", contollers.VerificationsStatus)
 
 	api.Use(utils.NotFoundMiddleware)
-
-	defer pg.Close()
-
 	log.Fatal(api.Listen(":8080"))
 }

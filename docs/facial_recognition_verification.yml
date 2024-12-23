@@ -12,7 +12,7 @@ facial_recognition_verification:
     optional_fields:
       - confidence_threshold: "Optional minimum confidence score for matching, default is 0.85."
   api_endpoint:
-    path: "/api/v1/verify/face"
+    path: "/api/v1/verify"
     method: POST
     body_example:
       type: "facial_recognition"
