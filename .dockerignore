@@ -1,2 +1,5 @@
 .air.toml
 .env
+docs
+config/*.env
+config/*.sqlite3

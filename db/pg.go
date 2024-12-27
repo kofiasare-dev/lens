@@ -34,7 +34,6 @@ func GetPgClient() *PgClient {
 		sqlDB.SetConnMaxLifetime(time.Hour)
 
 		pgClient = &PgClient{client}
-
 	})
 
 	return pgClient

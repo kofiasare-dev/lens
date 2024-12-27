@@ -1,0 +1,216 @@
+---
+engine_version: 0.4.21
+file_version: 2024-12-29 00:31:10.238107000 Z
+resources:
+- name: admin
+  preferences: {}
+  updated_at: 2024-12-25 02:03:09.171392000 +00:00
+- name: admin_login_change_key
+  preferences:
+    visible: false
+  updated_at: 2024-12-25 02:03:19.568414000 +00:00
+- name: admin_password_reset_key
+  preferences:
+    visible: false
+  updated_at: 2024-12-25 02:03:18.278261000 +00:00
+- name: admin_remember_key
+  preferences:
+    visible: false
+  updated_at: 2024-12-25 02:03:17.076229000 +00:00
+- name: admin_verification_key
+  preferences:
+    visible: false
+  updated_at: 2024-12-25 02:03:15.664138000 +00:00
+- name: api_key
+  preferences:
+    visible: false
+    actions:
+    - action_type: form
+      preferences:
+        form_id: 2
+      name: create
+    - visible: false
+      name: remove
+    - visible: false
+      name: edit
+    columns:
+    - access_type: hidden
+      name: key_digest
+    - access_type: hidden
+      name: id
+    - column_type: tag
+      default_value:
+      access_type: read_only
+      name: state
+    - column_type: tag
+      default_value:
+      format:
+        select_options:
+        - FACIAL_RECOGNITION
+      name: permissions
+    - access_type: read_only
+      reference:
+        name: client
+        display_name: Client
+        model_name: client
+        reference_type: belongs_to
+        foreign_key: client_id
+        primary_key: id
+        options: {}
+        polymorphic:
+        virtual: false
+      name: client_id
+  updated_at: 2024-12-28 05:29:04.274875000 +00:00
+- name: client
+  preferences:
+    columns:
+    - column_type: tag
+      access_type: read_only
+      default_value:
+      name: state
+    - access_type: hidden
+      name: id
+    actions:
+    - visible: false
+      name: remove
+  updated_at: 2024-12-26 10:02:04.804291000 +00:00
+- name: verification_request
+  preferences:
+    columns:
+    - access_type: hidden
+      name: callback_url
+    - column_type: tag
+      name: type
+    - column_type: tag
+      access_type: read_only
+      default_value:
+      name: state
+    actions:
+    - visible: false
+      name: create
+    - visible: false
+      name: edit
+    - visible: false
+      name: remove
+  updated_at: 2024-12-27 14:53:48.445685000 +00:00
+configs:
+- key: header.links
+  value:
+  - name: Reports
+    link_type: reports
+  - name: Forms
+    link_type: forms
+  updated_at: 2024-12-25 03:35:52.573500000 +00:00
+- key: resources.api_key.columns.order
+  value:
+  - name
+  - client_id
+  - id
+  - key_digest
+  - state
+  - permissions
+  - updated_at
+  - created_at
+  updated_at: 2024-12-26 09:50:53.151632000 +00:00
+- key: resources.order
+  value:
+  - client
+  - verification_request
+  - api_key
+  - active_storage/attachment
+  updated_at: 2024-12-25 02:21:11.810600000 +00:00
+- key: resources.verification_request.columns.order
+  value:
+  - id
+  - client_id
+  - type
+  - reference
+  - state
+  - payload
+  - result
+  - callback_url
+  - updated_at
+  - created_at
+  updated_at: 2024-12-29 00:31:10.238107000 +00:00
+queries:
+- id: 1
+  name: Hello Query
+  sql_body: SELECT 'Hello there'
+  description:
+  preferences:
+    visualization: value
+  tags: []
+  updated_at: 2024-12-25 01:59:23.972279000 +00:00
+- id: 2
+  name: Supported ApiKey Permissions
+  sql_body: ''
+  description:
+  preferences:
+    query_type: api
+    database: Default
+    visualization: table
+    visualization_options: {}
+    variables: []
+    api_config_name: lens
+    api_path: "/apikeys/supported_permissions"
+  tags: []
+  updated_at: 2024-12-25 19:49:14.895716000 +00:00
+dashboards:
+- id: 1
+  title: Hello Dashboard
+  description:
+  preferences:
+    layout:
+    - title: Hello
+      query_id: 1
+      size: 2x1
+  tags: []
+  updated_at: 2024-12-25 01:59:23.980604000 +00:00
+forms:
+- id: 2
+  name: Create Api Key
+  http_method: POST
+  api_path: "/apikeys"
+  description:
+  preferences:
+    fields:
+    - name: client_id
+      display_name: Client
+      default_value:
+      field_type: reference
+      validators:
+      - required: true
+      reference:
+        model_name: client
+    - name: name
+      display_name: Name
+      default_value:
+      field_type: input
+      is_array: false
+      validators:
+      - required: true
+    - name: permissions
+      display_name: Permissions
+      default_value: []
+      field_type: select
+      is_array: true
+      validators: []
+      select_query_id: 2
+    request_type: rest
+  api_config_name: lens
+  tags: []
+  updated_at: 2024-12-25 15:36:16.586551000 +00:00
+alerts: []
+api_configs:
+- id: 2
+  name: origin
+  url: "/"
+  preferences: {}
+  description:
+  updated_at: 2024-12-25 01:59:24.099469000 +00:00
+- id: 3
+  name: lens
+  url: http://192.168.8.154:8080/admin
+  preferences: {}
+  description:
+  updated_at: 2024-12-25 15:18:02.828219000 +00:00

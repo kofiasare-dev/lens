@@ -4,9 +4,9 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/gofiber/fiber/v3/log"
-	"github.com/kofiasare/lens-api/models"
-	"github.com/kofiasare/lens-api/utils"
+	"github.com/kofiasare-dev/utils"
+	"github.com/kofiasare/lens/app/constants"
+	"github.com/kofiasare/lens/app/models"
 )
 
 var NotFoundMiddleware = func(c fiber.Ctx) (err error) {
@@ -33,7 +33,7 @@ var AdminAuthMiddleware = func(c fiber.Ctx) (err error) {
 var ApiAuthMiddleware = func(c fiber.Ctx) (err error) {
 	authKey := c.Get("Authorization")
 
-	if utils.Blank(authKey) || !isValidApiKey(authKey) {
+	if utils.Blank(authKey) || invalidKey(authKey, c) {
 		err = c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": "Authentication Required",
 		})
@@ -44,14 +44,16 @@ var ApiAuthMiddleware = func(c fiber.Ctx) (err error) {
 	return c.Next()
 }
 
-func isValidApiKey(apiKey string) bool {
+func invalidKey(apiKey string, c fiber.Ctx) bool {
 	key, err := models.ApiKeyWithKey(apiKey)
 
-	if err != nil {
-		log.Info("Error:", err)
+	if err != nil ||
+		key.State == constants.APIKEY_REVOKED ||
+		key.Client.State == constants.CLIENT_INACTIVE {
+		return true
 	}
 
-	log.Info("Key found:", key)
+	c.Locals("APIKEY", key)
 
 	return false
 }

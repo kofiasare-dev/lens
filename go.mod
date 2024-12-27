@@ -1,11 +1,13 @@
-module github.com/kofiasare/lens-api
+module github.com/kofiasare/lens
 
-go 1.23.2
+go 1.23.4
 
 require (
+	github.com/Kagami/go-face v0.0.0-20210630145111-0c14797b4d0e
 	github.com/go-playground/validator/v10 v10.23.0
 	github.com/gofiber/fiber/v3 v3.0.0-beta.3
 	github.com/joho/godotenv v1.5.1
+	github.com/kofiasare-dev/utils v0.1.1
 	github.com/lib/pq v1.10.9
 	gorm.io/driver/postgres v1.5.11
 	gorm.io/gorm v1.25.12

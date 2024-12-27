@@ -1,5 +1,5 @@
-docker run -d -p 3000:3000 \
+docker run -d -p 3000:3000  --restart unless-stopped \
   --network db_net \
-  -v `pwd`/motor:/app \
+  -v `pwd`/config:/app \
   -e 'DATABASE_URL=postgres://postgres:postgres@achieve-postgres-1:5432/lens' \
   motoradmin/motoradmin:latest
