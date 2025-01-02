@@ -3,3 +3,7 @@ docker run -d -p 3000:3000  --restart unless-stopped \
   -v `pwd`/config:/app \
   -e 'DATABASE_URL=postgres://postgres:postgres@achieve-postgres-1:5432/lens' \
   motoradmin/motoradmin:latest
+
+
+
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

@@ -1,6 +1,6 @@
 ---
 engine_version: 0.4.21
-file_version: 2024-12-29 00:31:10.238107000 Z
+file_version: 2025-01-05 00:49:49.645607000 Z
 resources:
 - name: admin
   preferences: {}
@@ -74,6 +74,22 @@ resources:
     - visible: false
       name: remove
   updated_at: 2024-12-26 10:02:04.804291000 +00:00
+- name: guaranteed_execution
+  preferences:
+    actions:
+    - visible: false
+      name: create
+    - visible: false
+      name: edit
+    - visible: false
+      name: remove
+    visible: false
+    columns:
+    - column_type: tag
+      name: guaranteeable_type
+    - column_type: tag
+      name: task
+  updated_at: 2025-01-05 00:49:49.645607000 +00:00
 - name: verification_request
   preferences:
     columns:
@@ -92,7 +108,16 @@ resources:
       name: edit
     - visible: false
       name: remove
-  updated_at: 2024-12-27 14:53:48.445685000 +00:00
+    associations:
+    - name: guranteed_executions
+      display_name: Guranteed executions
+      model_name: guaranteed_execution
+      foreign_key: guaranteeable_id
+      primary_key: id
+      virtual: true
+      polymorphic: true
+      slug: guranteed_executions
+  updated_at: 2025-01-02 20:44:22.302650000 +00:00
 configs:
 - key: header.links
   value:

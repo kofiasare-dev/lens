@@ -6,7 +6,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/kofiasare-dev/utils"
 	"github.com/kofiasare/lens/app/constants"
-	"github.com/kofiasare/lens/app/inputs"
+	"github.com/kofiasare/lens/app/contollers/inputs"
 	"github.com/kofiasare/lens/app/models"
 	"github.com/kofiasare/lens/app/validators"
 )

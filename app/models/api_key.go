@@ -6,8 +6,8 @@ import (
 	"slices"
 
 	"github.com/kofiasare-dev/utils"
-	"github.com/kofiasare/lens/app/inputs"
-	"github.com/kofiasare/lens/db"
+	"github.com/kofiasare/lens/app/contollers/inputs"
+	"github.com/kofiasare/lens/app/services/db"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )

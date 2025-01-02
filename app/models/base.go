@@ -42,4 +42,5 @@ var Migrations = []interface{}{
 	&Client{},
 	&ApiKey{},
 	&VerificationRequest{},
+	&GuaranteedExecution{},
 }

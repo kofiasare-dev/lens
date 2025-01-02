@@ -3,7 +3,7 @@ package contollers
 import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/kofiasare/lens/app/constants"
-	"github.com/kofiasare/lens/app/inputs"
+	"github.com/kofiasare/lens/app/contollers/inputs"
 	"github.com/kofiasare/lens/app/models"
 	"github.com/kofiasare/lens/app/validators"
 )
@@ -46,13 +46,12 @@ func VerificationsCreate(c fiber.Ctx) (err error) {
 }
 
 func VerificationsShow(c fiber.Ctx) (err error) {
-	vr := &models.VerificationRequest{Reference: c.Params("reference")}
-
-	if _, err = models.FindVerificationRequest(vr); err != nil {
+	v, err := models.FindVerificationByReference(c.Params("reference"))
+	if err != nil {
 		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
-	return c.JSON(fiber.Map{"verificationRequest": vr})
+	return c.JSON(fiber.Map{"verificationRequest": v})
 }

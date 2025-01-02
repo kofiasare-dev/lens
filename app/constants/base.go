@@ -8,8 +8,15 @@ const (
 	CLIENT_ACTIVE                 = "active"
 
 	ERROR_INSUFFICIENT_PRIVELEGES = "INSUFFICIENT PRIVILEGES"
+
+	// TASKS
+	VERIFICATION_REQUEST_PROCESSING_TASK = "verification_request:process"
+	QUEUE_DEFAULT                        = "default"
+	QUEUE_PRIORITY                       = "priority"
 )
 
-var SupportedApiKeyPermissions = []string{
-	PERMISSION_FACIAL_RECOGNITION,
-}
+var (
+	SupportedApiKeyPermissions = []string{
+		PERMISSION_FACIAL_RECOGNITION,
+	}
+)
