@@ -28,6 +28,8 @@ func Format(err error) (errs []string) {
 				fieldErr.Tag(),
 			))
 		}
+	} else {
+		errs = append(errs, err.Error())
 	}
 
 	return errs

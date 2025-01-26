@@ -1,11 +1,11 @@
 package constants
 
 const (
-	PERMISSION_FACIAL_RECOGNITION = "FACIAL_RECOGNITION"
-	APIKEY_REVOKED                = "revoked"
-	APIKEY_ENABLED                = "enabled"
-	CLIENT_INACTIVE               = "inactive"
-	CLIENT_ACTIVE                 = "active"
+	PERMISSION_FACIAL_MATCH = "FACIAL_MATCH"
+	APIKEY_REVOKED          = "revoked"
+	APIKEY_ENABLED          = "enabled"
+	CLIENT_INACTIVE         = "inactive"
+	CLIENT_ACTIVE           = "active"
 
 	ERROR_INSUFFICIENT_PRIVELEGES = "INSUFFICIENT PRIVILEGES"
 
@@ -17,6 +17,6 @@ const (
 
 var (
 	SupportedApiKeyPermissions = []string{
-		PERMISSION_FACIAL_RECOGNITION,
+		PERMISSION_FACIAL_MATCH,
 	}
 )

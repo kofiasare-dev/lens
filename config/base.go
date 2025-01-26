@@ -16,7 +16,7 @@ import (
 )
 
 func HookRoutesTo(app *fiber.App) {
-	app.Get("/up", contollers.Root) // Health check
+	app.Get("/up", contollers.Root)
 
 	registerAdminRoutes(app)
 	registerApiV1Routes(app)
@@ -34,7 +34,7 @@ func registerAdminRoutes(app *fiber.App) {
 
 func registerApiV1Routes(app *fiber.App) {
 	v1 := app.Group("/api/v1", middleware.ApiAuthMiddleware)
-	v1.Post("/verifications", contollers.VerificationsCreate)
+	v1.Post("/face-match", contollers.FaceMatch)
 	v1.Get("/verifications/:reference", contollers.VerificationsShow)
 }
 

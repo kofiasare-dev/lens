@@ -8,41 +8,42 @@ import (
 	"github.com/kofiasare/lens/app/validators"
 )
 
-func VerificationsCreate(c fiber.Ctx) (err error) {
-
-	// base inputs
-	var bi inputs.BaseVerificationInput
-	if err = c.Bind().JSON(&bi); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"errors": validators.Format(err),
-		})
-	}
-
-	// specific input
-	si := bi.LoadSpecificInput()
-	if err = c.Bind().JSON(si); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"errors": validators.Format(err),
-		})
-	}
-
-	// key authorization
+func FaceMatch(c fiber.Ctx) (err error) {
 	key := c.Locals("APIKEY").(*models.ApiKey)
-	if !key.Supports(bi.Type) {
+	if !key.Supports(constants.PERMISSION_FACIAL_MATCH) {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": constants.ERROR_INSUFFICIENT_PRIVELEGES,
 		})
 	}
 
-	// create
-	vr, err := models.CreateVerificationRequest(key.Client, si)
-	if err != nil {
+	var fmi inputs.FaceMatchInput
+
+	if err := fmi.Validate(c); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"errors": validators.Format(err),
+		})
+	}
+
+	if err := fmi.UploadImages(); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+	vr := &models.VerificationRequest{
+		Type:        constants.PERMISSION_FACIAL_MATCH,
+		Client:      key.Client,
+		CallbackURL: fmi.CallbackURL,
+		Reference:   fmi.Reference,
+	}
+
+	if err = models.CreateVerificationRequest(vr); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
 
 	return c.JSON(fiber.Map{"verificationRequest": vr})
+
 }
 
 func VerificationsShow(c fiber.Ctx) (err error) {

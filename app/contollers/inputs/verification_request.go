@@ -1,34 +1,56 @@
 package inputs
 
 import (
-	"github.com/kofiasare/lens/app/constants"
+	"errors"
+	"mime/multipart"
+	"strings"
+
+	"github.com/gofiber/fiber/v3"
 )
 
-type (
-	BaseVerificationInput struct {
-		Type        string `json:"type" validate:"required,oneof=FACIAL_RECOGNITION"`
-		Reference   string `json:"reference" validate:"required,len=32"`
-		CallbackURL string `json:"callbackUrl" validate:"required,url"`
-	}
-
-	FacialRecognitionInput struct {
-		*BaseVerificationInput
-		Payload struct {
-			TargetImageURL    string `json:"targetImageUrl" validate:"required,url"`
-			ReferenceImageURL string `json:"referenceImageUrl" validate:"required,url"`
-		}
-	}
-
-	VerificationSpecificInput interface{ BaseInput() }
-)
-
-func (b *BaseVerificationInput) LoadSpecificInput() VerificationSpecificInput {
-	switch b.Type {
-	case constants.PERMISSION_FACIAL_RECOGNITION:
-		return &FacialRecognitionInput{BaseVerificationInput: b}
-	default:
-		return nil
-	}
+type FaceMatchInput struct {
+	Reference      string                `form:"reference" validate:"required,len=32"`
+	CallbackURL    string                `form:"callbackUrl" validate:"required,url"`
+	TargetImage    *multipart.FileHeader `form:"-"`
+	ReferenceImage *multipart.FileHeader `form:"-"`
 }
 
-func (f FacialRecognitionInput) BaseInput() {}
+func (fmi *FaceMatchInput) Validate(c fiber.Ctx) (err error) {
+	if err = c.Bind().Form(fmi); err != nil {
+		return
+	}
+
+	if fmi.TargetImage, _ = c.FormFile("targetImage"); fmi.TargetImage == nil {
+		return errors.New("targetImage is required")
+	}
+
+	if err = fmi.validateFile(fmi.TargetImage); err != nil {
+		return errors.New("invalid targetImage: " + err.Error())
+	}
+
+	if fmi.ReferenceImage, _ = c.FormFile("referenceImage"); fmi.ReferenceImage == nil {
+		return errors.New("referenceImage is required")
+	}
+
+	if err = fmi.validateFile(fmi.ReferenceImage); err != nil {
+		return errors.New("invalid referenceImage: " + err.Error())
+	}
+
+	return
+}
+
+func (fmi *FaceMatchInput) validateFile(file *multipart.FileHeader) error {
+	if file.Size > 5*1024*1024 {
+		return errors.New("file size exceeds 5MB")
+	}
+
+	if !strings.EqualFold(file.Header.Get("Content-Type"), "image/jpeg") {
+		return errors.New("file must be of type image/jpeg")
+	}
+
+	return nil
+}
+
+func (fmi *FaceMatchInput) UploadImages() (err error) {
+	return
+}
