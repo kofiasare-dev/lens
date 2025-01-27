@@ -2,17 +2,28 @@ package inputs
 
 import (
 	"errors"
+	"fmt"
+	"io"
 	"mime/multipart"
 	"strings"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/kofiasare/lens/app/services/db"
 )
 
 type FaceMatchInput struct {
 	Reference      string                `form:"reference" validate:"required,len=32"`
 	CallbackURL    string                `form:"callbackUrl" validate:"required,url"`
-	TargetImage    *multipart.FileHeader `form:"-"`
 	ReferenceImage *multipart.FileHeader `form:"-"`
+	TargetImage    *multipart.FileHeader `form:"-"`
+}
+
+func (fmi *FaceMatchInput) Bind(c fiber.Ctx) (err error) {
+	if err = c.Bind().Form(fmi); err != nil {
+		return
+	}
+
+	return
 }
 
 func (fmi *FaceMatchInput) Validate(c fiber.Ctx) (err error) {
@@ -39,6 +50,37 @@ func (fmi *FaceMatchInput) Validate(c fiber.Ctx) (err error) {
 	return
 }
 
+func (fmi *FaceMatchInput) UploadImages() (err error) {
+	bc := db.GetBadgerClient()
+
+	files := map[string]*multipart.FileHeader{
+		"referenceImage": fmi.ReferenceImage,
+		"targetImage":    fmi.TargetImage,
+	}
+
+	for id, file := range files {
+		f, err := file.Open()
+		if err != nil {
+			return err
+		}
+
+		defer f.Close()
+
+		data, err := io.ReadAll(f)
+		if err != nil {
+			return err
+		}
+
+		err = bc.Set(fmt.Sprintf("%s:%s", id, fmi.Reference), data)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	return nil
+}
+
 func (fmi *FaceMatchInput) validateFile(file *multipart.FileHeader) error {
 	if file.Size > 5*1024*1024 {
 		return errors.New("file size exceeds 5MB")
@@ -49,8 +91,4 @@ func (fmi *FaceMatchInput) validateFile(file *multipart.FileHeader) error {
 	}
 
 	return nil
-}
-
-func (fmi *FaceMatchInput) UploadImages() (err error) {
-	return
 }

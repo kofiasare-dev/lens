@@ -48,15 +48,15 @@ func newFaceMatcher(modelsDir string) (m *FaceMatcher, err error) {
 }
 
 // CompareFaceImages compares faces in two images and returns match results
-func (fm *FaceMatcher) CompareFaceImages(image1Path, image2Path string) (MatchResult, error) {
-	d1, err := fm.getFaceDescriptor(image1Path)
+func (fm *FaceMatcher) CompareFaceImages(refImg, targetImg []byte) (MatchResult, error) {
+	d1, err := fm.getFaceDescriptor(refImg)
 	if err != nil {
-		return MatchResult{}, fmt.Errorf("error processing first image: %v", err)
+		return MatchResult{}, fmt.Errorf("error processing reference image: %v", err)
 	}
 
-	d2, err := fm.getFaceDescriptor(image2Path)
+	d2, err := fm.getFaceDescriptor(targetImg)
 	if err != nil {
-		return MatchResult{}, fmt.Errorf("error processing second image: %v", err)
+		return MatchResult{}, fmt.Errorf("error processing target image: %v", err)
 	}
 
 	return fm.compareDescriptors(d1, d2), nil
@@ -68,8 +68,8 @@ func (fm *FaceMatcher) Close() {
 	}
 }
 
-func (fm *FaceMatcher) getFaceDescriptor(imagePath string) (d *face.Descriptor, err error) {
-	face, err := fm.r.RecognizeSingleFile(imagePath)
+func (fm *FaceMatcher) getFaceDescriptor(imageData []byte) (d *face.Descriptor, err error) {
+	face, err := fm.r.RecognizeSingle(imageData)
 	if err != nil {
 		return
 	}

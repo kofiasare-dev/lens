@@ -19,6 +19,9 @@ func main() {
 	pg := db.GetPgClient()
 	defer pg.Close()
 
+	bd := db.GetBadgerClient()
+	defer bd.Close()
+
 	bg := bg.GetInstance()
 	defer bg.Stop()
 

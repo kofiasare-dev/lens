@@ -1,6 +1,6 @@
 ---
 engine_version: 0.4.21
-file_version: 2025-01-05 00:49:49.645607000 Z
+file_version: 2025-03-09 23:41:47.848227000 Z
 resources:
 - name: admin
   preferences: {}
@@ -60,7 +60,9 @@ resources:
         polymorphic:
         virtual: false
       name: client_id
-  updated_at: 2024-12-28 05:29:04.274875000 +00:00
+    searchable_columns:
+    - name
+  updated_at: 2025-03-09 19:44:25.854529000 +00:00
 - name: client
   preferences:
     columns:
@@ -101,6 +103,8 @@ resources:
       access_type: read_only
       default_value:
       name: state
+    - access_type: read_only
+      name: result
     actions:
     - visible: false
       name: create
@@ -117,7 +121,14 @@ resources:
       virtual: true
       polymorphic: true
       slug: guranteed_executions
-  updated_at: 2025-01-02 20:44:22.302650000 +00:00
+    searchable_columns:
+    - reference
+    custom_sql: |-
+      SELECT "verification_requests".* FROM "verification_requests"
+      ORDER BY updated_at::TIMESTAMP DESC
+    display_name: Verifications Requests
+    visible: false
+  updated_at: 2025-03-09 23:41:47.848227000 +00:00
 configs:
 - key: header.links
   value:

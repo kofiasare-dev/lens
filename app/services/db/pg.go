@@ -21,12 +21,12 @@ func GetPgClient() *PgClient {
 
 		client, err := gorm.Open(postgres.Open(os.Getenv("DB_DSN")))
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal(err)
 		}
 
 		sqlDB, err := client.DB()
 		if err != nil {
-			log.Fatal(err.Error())
+			log.Fatal(err)
 		}
 
 		sqlDB.SetMaxOpenConns(10)

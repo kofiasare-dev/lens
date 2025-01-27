@@ -1,11 +1,14 @@
 package contollers
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v3"
 	"github.com/kofiasare/lens/app/constants"
 	"github.com/kofiasare/lens/app/contollers/inputs"
 	"github.com/kofiasare/lens/app/models"
 	"github.com/kofiasare/lens/app/validators"
+	"gorm.io/gorm"
 )
 
 func FaceMatch(c fiber.Ctx) (err error) {
@@ -17,6 +20,22 @@ func FaceMatch(c fiber.Ctx) (err error) {
 	}
 
 	var fmi inputs.FaceMatchInput
+	if err := fmi.Bind(c); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"errors": validators.Format(err),
+		})
+	}
+
+	vr, err := models.FindVerificationByReference(fmi.Reference)
+	if err == nil && vr != nil {
+		return c.JSON(fiber.Map{"verificationRequest": vr})
+	}
+
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Database error: " + err.Error(),
+		})
+	}
 
 	if err := fmi.Validate(c); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -29,10 +48,11 @@ func FaceMatch(c fiber.Ctx) (err error) {
 			"error": err.Error(),
 		})
 	}
-	vr := &models.VerificationRequest{
+
+	vr = &models.VerificationRequest{
+		CallbackURL: fmi.CallbackURL,
 		Type:        constants.PERMISSION_FACIAL_MATCH,
 		Client:      key.Client,
-		CallbackURL: fmi.CallbackURL,
 		Reference:   fmi.Reference,
 	}
 

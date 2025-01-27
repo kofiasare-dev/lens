@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 
 	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v3/client"
+	"github.com/gofiber/fiber/v3/log"
 	"github.com/gofiber/fiber/v3/middleware/adaptor"
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
@@ -52,12 +54,29 @@ func setupTaskHandlers(app *fiber.App) {
 				return
 			}
 
-			vr, err := models.FindVerificationRequest(uuid.MustParse(ge.GuaranteeableID))
+			v, err := models.FindVerificationRequest(uuid.MustParse(ge.GuaranteeableID))
 			if err != nil {
 				return
 			}
 
-			vr.ProcessVerificationRequest()
+			r, err := v.ProcessVerificationRequest()
+			if err != nil {
+				v.Fail(err)
+
+				return nil
+			}
+
+			v.Complete(r)
+
+			payload := client.Config{
+				Body: fiber.Map{"verificationRequest": v},
+			}
+
+			if _, err = client.New().Post(v.CallbackURL, payload); err != nil {
+				log.Error("Failed to make callback request: ", err)
+
+				return
+			}
 
 			return
 		},
